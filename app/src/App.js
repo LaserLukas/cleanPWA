@@ -1,23 +1,23 @@
 import React, { useState } from "react";
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import { Button } from "react-bootstrap";
+import { Button, Container, Row } from "react-bootstrap";
 import "./App.scss";
+import cleaningSchedule from "./data";
+import Header from "./components/Header";
+import TasksList from "./components/TasksList";
+import Helper from "./util/Helper";
 
-function App() {
+export default function App() {
   const [isClicked, setIsClicked] = useState(false);
 
+  const progressOverall = Helper.getOverallProgress(cleaningSchedule.tasks);
+
   return (
-    <div className="App-container">
-      <Button
-        variant="outline-primary"
-        active={isClicked}
-        onClick={(e) => setIsClicked(!isClicked)}
-      >
-        Primary
-      </Button>
+    <div>
+      <Header progressPercent={progressOverall}></Header>
+      <Container className="App-container">
+        <TasksList tasks={cleaningSchedule.tasks}></TasksList>
+      </Container>
     </div>
   );
 }
-
-export default App;

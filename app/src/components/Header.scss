@@ -1,0 +1,23 @@
+@import '../index.scss';
+
+$horizontalSpace: 10%;
+
+.Header-container {
+    border-radius: 0px 0px 30px 30px;
+    background-color: blueviolet;
+    padding-left: $horizontalSpace;
+    padding-right: $horizontalSpace;
+    color: white;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.Space-top {
+    margin-top: $horizontalSpace;
+}
+
+
+.Space-bottom {
+    margin-bottom: $horizontalSpace;
+}
