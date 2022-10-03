@@ -14,8 +14,11 @@
     justify-content: center;
 }
 
-.Margin-null {
+.Margin-none {
     margin: 0%;
+}
+
+.Padding-none {
     padding: 0%;
 }
 
@@ -26,9 +29,9 @@
 
 .Heading-medium {
     font-size: x-large;
+    font-weight: bold;
 }
 
 .Heading-small {
     font-size: large;
-    font-weight: bold;
 }

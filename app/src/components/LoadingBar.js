@@ -9,7 +9,7 @@ export default function LoadingBar({ PerCent }) {
   ];
 
   return (
-    <Container className="Margin-null">
+    <Container className="Margin-none Padding-none">
       <Row>
         <Col>{PerCent} %</Col>
       </Row>
