@@ -22,6 +22,7 @@ export default function TaskPreview({ task }) {
             width={48}
             height={48}
             roundedCircle
+            alt="Profile Picture"
           ></Image>
         </Col>
       </Row>
