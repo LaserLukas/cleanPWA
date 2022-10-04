@@ -1,10 +1,11 @@
 @import '../index.scss';
+@import '../custom.scss';
 
 $horizontalSpace: 5%;
 
 .Header-container {
     border-radius: 0px 0px 20px 20px;
-    background-color: blueviolet;
+    background-color: $primary;
     padding-left: $horizontalSpace;
     padding-right: $horizontalSpace;
     color: white;
