@@ -1,5 +1,8 @@
 @import './custom.scss';
 
+
+/* Font */
+
 .Text-center {
     text-align: center;
 }
@@ -12,16 +15,16 @@
     text-align: start;
 }
 
-.Content-center {
-    justify-content: center;
+.Text-light {
+    color: $light;
 }
 
-.Margin-none {
-    margin: 0%;
+.Text-dark {
+    color: $dark;
 }
 
-.Padding-none {
-    padding: 0%;
+.Text-bold {
+    font-weight: bold;
 }
 
 .Heading-big {
@@ -37,3 +40,23 @@
 .Heading-small {
     font-size: large;
 }
+
+/* Layout */
+
+.Height-full {
+    height: 100%;
+}
+
+.Content-center {
+    justify-content: center;
+}
+
+.Margin-none {
+    margin: 0%;
+}
+
+.Padding-none {
+    padding: 0%;
+}
+
+

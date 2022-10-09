@@ -10,3 +10,17 @@
     box-shadow: 5px 5px 12px -8px rgba(0,0,0,0.5);
     border-radius: 15px;
 }
+
+.Todo {
+    margin: 5%;
+    padding:5%;
+    box-shadow: 5px 5px 12px -8px rgba(0,0,0,0.5);
+    border-radius: 30px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.Color-done {
+    background-color: $success;
+}
+

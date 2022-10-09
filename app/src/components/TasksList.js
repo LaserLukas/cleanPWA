@@ -8,8 +8,8 @@ export default function TasksList({ tasks }) {
     <Container>
       {tasks.map((task, i) => {
         return (
-          <div className="Margin-bottom Margin-top">
-            <TaskPreview task={task} key={i} />
+          <div className="Margin-bottom Margin-top" key={i}>
+            <TaskPreview task={task} />
           </div>
         );
       })}
