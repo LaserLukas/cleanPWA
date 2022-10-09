@@ -21,7 +21,7 @@ export default function TaskPreview({ task }) {
       <Row>
         <Col>
           <Row>
-            <p className="Heading-small Margin-none">{task.title}</p>
+            <p className="Heading-small Margin-none Text-bold">{task.title}</p>
           </Row>
           <Row>
             <p>status information</p>
@@ -55,7 +55,7 @@ export default function TaskPreview({ task }) {
             return (
               <div
                 onClick={(e) => setNewTodoStateDone(e, true, i)}
-                className="Todo Text-dark"
+                className="Todo"
                 key={i}
               >
                 {todo.title}
