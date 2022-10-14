@@ -3,7 +3,7 @@ import TaskPreview from "./TaskPreview";
 import "./TaskList.scss";
 import { useState } from "react";
 
-export default function TasksList({ tasks, todos }) {
+export default function TasksList({ tasks, todos, updateTodo }) {
   return (
     <Container>
       {tasks.map((task, i) => {
@@ -15,7 +15,11 @@ export default function TasksList({ tasks, todos }) {
         console.log(taskTodos);
         return (
           <div className="Margin-bottom Margin-top" key={i}>
-            <TaskPreview task={task} todos={taskTodos} />
+            <TaskPreview
+              task={task}
+              todos={taskTodos}
+              updateTodo={updateTodo}
+            />
           </div>
         );
       })}

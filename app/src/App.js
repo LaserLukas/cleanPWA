@@ -2,17 +2,13 @@ import React, { useEffect, useState } from "react";
 
 import { Container } from "react-bootstrap";
 import "./App.scss";
-import cleaningSchedule from "./data";
 import Header from "./components/Header";
 import TasksList from "./components/TasksList";
 import Helper from "./util/Helper";
-import Mapper from "./util/Mapper";
 
 import db from "./firebase";
-import { doc, getDoc, collection, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
 import { uid } from "uid";
-import { async } from "@firebase/util";
-import { TbIdOff } from "react-icons/tb";
 
 export default function App() {
   const [flatSchedule, setFlatSchedule] = useState();
@@ -20,6 +16,24 @@ export default function App() {
   const [todos, setTodos] = useState([]);
   const [flatId, setFlatId] = useState("flat1");
   const [progressOverall, setProgressOverall] = useState(0);
+
+  function updateTodo(newTodo, updateId) {
+    const todoRef = doc(db, "todos", updateId);
+
+    updateDoc(todoRef, {
+      done: newTodo.done,
+    });
+
+    setTodos((oldState) => {
+      console.log("update old Todo state");
+      console.dir(oldState);
+      const index = oldState.findIndex((oldTodo) => oldTodo.id === updateId);
+      oldState[index] = newTodo;
+      console.log("updated");
+      console.dir(oldState);
+      return [...oldState];
+    });
+  }
 
   // Fetch flat data
 
@@ -104,6 +118,7 @@ export default function App() {
   }, [flatTasks]);
 
   useEffect(() => {
+    console.log("updated todos");
     if (todos) {
       console.dir(todos);
       console.log("todos are now definded");
@@ -122,7 +137,11 @@ export default function App() {
         ></Header>
       )}
       <Container className="App-container">
-        <TasksList tasks={flatTasks} todos={todos}></TasksList>
+        <TasksList
+          tasks={flatTasks}
+          todos={todos}
+          updateTodo={updateTodo}
+        ></TasksList>
       </Container>
     </div>
   );

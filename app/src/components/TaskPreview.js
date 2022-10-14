@@ -4,19 +4,18 @@ import Helper from "../util/Helper.js";
 import LoadingBar from "./LoadingBar";
 import "./TaskPreview.scss";
 
-export default function TaskPreview({ task, todos = [] }) {
+export default function TaskPreview({ task, todos = [], updateTodo }) {
   console.log("render task: " + task.title);
   console.log(" with todos: ");
   console.dir(todos);
   const [todosState, setTodosState] = useState();
   const [showDetails, setShowDetails] = useState(false);
 
-  function setNewTodoStateDone(event, isDone, index) {
+  function setNewTodoStateDone(event, isDone, todo) {
     event.stopPropagation();
     // TODO: Safe the new state also permanent
-    const copyTodosSate = [...todosState];
-    copyTodosSate[index].done = isDone;
-    setTodosState(copyTodosSate);
+    todo.done = isDone;
+    updateTodo(todo, todo.id);
   }
 
   return (
@@ -49,7 +48,7 @@ export default function TaskPreview({ task, todos = [] }) {
           if (todo.done) {
             return (
               <div
-                onClick={(e) => setNewTodoStateDone(e, false, i)}
+                onClick={(e) => setNewTodoStateDone(e, false, todo)}
                 className="Todo Color-done Text-light"
                 key={i}
               >
@@ -59,7 +58,7 @@ export default function TaskPreview({ task, todos = [] }) {
           } else {
             return (
               <div
-                onClick={(e) => setNewTodoStateDone(e, true, i)}
+                onClick={(e) => setNewTodoStateDone(e, true, todo)}
                 className="Todo"
                 key={i}
               >
