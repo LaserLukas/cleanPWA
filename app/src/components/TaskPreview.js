@@ -4,8 +4,11 @@ import Helper from "../util/Helper.js";
 import LoadingBar from "./LoadingBar";
 import "./TaskPreview.scss";
 
-export default function TaskPreview({ task }) {
-  const [todosState, setTodosState] = useState(task.todos);
+export default function TaskPreview({ task, todos = [] }) {
+  console.log("render task: " + task.title);
+  console.log(" with todos: ");
+  console.dir(todos);
+  const [todosState, setTodosState] = useState();
   const [showDetails, setShowDetails] = useState(false);
 
   function setNewTodoStateDone(event, isDone, index) {
@@ -38,9 +41,11 @@ export default function TaskPreview({ task }) {
           ></Image>
         </Col>
       </Row>
-      <LoadingBar PerCent={Helper.getTaskProgress(task.todos)} />
+      <LoadingBar PerCent={Helper.getTaskProgress(todos)} />
       {showDetails &&
-        todosState.map((todo, i) => {
+        todos.map((todo, i) => {
+          console.log("create todo: ");
+          console.dir(todo);
           if (todo.done) {
             return (
               <div

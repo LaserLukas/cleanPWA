@@ -1,0 +1,111 @@
+{
+    "users": {
+        "ennisId": {
+            "name": "Ennis Ole",
+            "avatar": "tiger.png",
+            "schedules": {
+                "hoodgartId": true
+            }
+        },
+        "valeId": {
+            "name": "Valentin Koyote",
+            "avatar": "koyote.png",
+            "schedules": {
+                "hoodgartId": true
+            }
+        },
+        "ganterId": {
+            "name": "Lukas Ganter",
+            "avatar": "gans.png",
+            "schedules": {
+                "hoodgartId": true
+            }
+        }
+    },
+    "flats": {
+        "hoodgartId": {
+            "title": "hoodgart",
+            "startWeekday": 2,
+            "endWeekday": 4,
+            "members": {
+                "ennisId": true,
+                "valeId": true
+            },
+            "tasks": {
+                "task1": true,
+                "task2": true
+            }
+        }
+    },
+    "tasks": {
+        "task1": {
+            "title": "Kitchen",
+            "responsible": {
+                "ennisId": true
+            },
+            "todos": {
+                "todo1": true,
+                "todo2": true
+            }
+        },
+        "task2": {
+            "title": "Bath",
+            "responsible": {
+                "valeId": true
+            },
+            "todos": {
+                "todo3": true,
+                "todo4": true,                
+                "todo5": true
+            }
+        },
+        "task3": {
+            "title": "Toilet",
+            "responsible": {
+                "ganterId": true
+            },
+            "todos": {
+                "todo6": true,
+                "todo7": true
+            }
+        }
+    },
+    "todos":  {
+        "todo1": {
+            "title": "stove",
+            "icon": "stove",
+            "done": false
+            
+        },
+        "todo2": {
+            "title": "wipe table",
+            "icon": "cold",
+            "done": true
+        },
+        "todo3": {
+            "title": "sink",
+            "icon": "sink",
+            "done": false
+        },
+        "todo4": {
+            "title": "shower",
+            "icon": "shower",
+            "done": false
+        },
+        "todo5": {
+            "title": "floor",
+            "icon": "floor",
+            "done": false
+        },
+        "todo6": {
+            "title": "toilet",
+            "icon": "toilet",
+            "done": false
+        },
+        "todo7": {
+            "title": "sink",
+            "icon": "sink",
+            "done": false
+        }
+    }
+}

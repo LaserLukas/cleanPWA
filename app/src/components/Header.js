@@ -4,7 +4,7 @@ import LoadingBar from "./LoadingBar";
 import { TbChevronLeft, TbChevronRight } from "react-icons/tb";
 import Icon from "./Icons/Icon";
 
-export default function Header({ progressPercent }) {
+export default function Header({ progressPercent, title = "Clean Flat" }) {
   const date = new Date().toLocaleDateString();
 
   // dicretion = either samller or bigger 0
@@ -22,7 +22,7 @@ export default function Header({ progressPercent }) {
     <Container className="Header-container" fluid>
       <Container fluid="sm">
         <Row>
-          <p className="Text-center Space-bottom Heading-small">Clean Flat</p>
+          <p className="Text-center Space-bottom Heading-small">{title}</p>
           <Col>
             <div className="Height-full Text-center">
               <Icon
