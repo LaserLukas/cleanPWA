@@ -1,11 +1,12 @@
 import { Container } from "react-bootstrap";
 import TaskPreview from "./TaskPreview";
 import "./TaskList.scss";
-import { useState } from "react";
 
 export default function TasksList({ tasks, todos, updateTodo }) {
   return (
-    <Container>
+    // TODO: css to make the scrolling correct - use placeholder of exact size of the header container
+    <Container classname="List-container">
+      <div className="Item-placeholder"></div>
       {tasks.map((task, i) => {
         var taskTodos = [];
         task.todos.forEach((todoId) => {
