@@ -8,7 +8,7 @@ import { ref, getDownloadURL } from "firebase/storage";
 
 export default function TaskPreview({ task, todos = [], updateTodo, user }) {
   const [showDetails, setShowDetails] = useState(false);
-  const [iconURL, setIconURL] = useState("./images/icons8-walross-100.png");
+  const [iconURL, setIconURL] = useState("./images/placeholder.png");
 
   function setNewTodoStateDone(event, isDone, todo) {
     event.stopPropagation();
