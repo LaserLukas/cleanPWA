@@ -1,22 +1,36 @@
 import { Col, Container, Image, Row } from "react-bootstrap";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Helper from "../util/Helper.js";
 import LoadingBar from "./LoadingBar";
 import "./TaskPreview.scss";
+import { storage } from "../firebase";
+import { ref, getDownloadURL } from "firebase/storage";
 
-export default function TaskPreview({ task, todos = [], updateTodo }) {
-  console.log("render task: " + task.title);
-  console.log(" with todos: ");
-  console.dir(todos);
-  const [todosState, setTodosState] = useState();
+export default function TaskPreview({ task, todos = [], updateTodo, user }) {
   const [showDetails, setShowDetails] = useState(false);
+  const [iconURL, setIconURL] = useState("./images/icons8-walross-100.png");
 
   function setNewTodoStateDone(event, isDone, todo) {
     event.stopPropagation();
-    // TODO: Safe the new state also permanent
     todo.done = isDone;
+    // use callback funtion to change state and safe changes in database
     updateTodo(todo, todo.id);
   }
+
+  // download the
+  useEffect(() => {
+    console.log("fetch image, user: ");
+    console.dir(user);
+    if (user) {
+      getDownloadURL(ref(storage, `character_images/${user.avatarIcon}`))
+        .then((url) => {
+          setIconURL(url);
+        })
+        .catch((error) => {
+          // Handle any errors
+        });
+    }
+  }, [user]);
 
   return (
     <Container className="Card" onClick={() => setShowDetails(!showDetails)}>
@@ -31,7 +45,7 @@ export default function TaskPreview({ task, todos = [], updateTodo }) {
         </Col>
         <Col>
           <Image
-            src="./images/ProfilePicture.png"
+            src={iconURL}
             className="Profile-image"
             width={48}
             height={48}
