@@ -4,11 +4,18 @@ import LoadingBar from "./LoadingBar";
 import { TbChevronLeft, TbChevronRight } from "react-icons/tb";
 import Icon from "./Icons/Icon";
 
-export default function Header({ progressPercent, title = "Clean Flat" }) {
-  const date = new Date().toLocaleDateString();
-
+export default function Header({
+  progressPercent,
+  title = "Clean Flat",
+  date,
+  setDate,
+}) {
   // dicretion = either samller or bigger 0
   function pickNextDate(direction) {
+    const newDate = new Date(date);
+    newDate.setDate(newDate.getDate() + direction);
+    setDate(newDate.toUTCString());
+    console.log(newDate.toUTCString());
     if (direction < 0) {
       console.log("Picked next smaller date: Fetch the new data...");
       // call callback function that changes data state
@@ -33,8 +40,12 @@ export default function Header({ progressPercent, title = "Clean Flat" }) {
             </div>
           </Col>
           <Col>
-            <Row className="Content-center Heading-medium">Today</Row>
-            <Row className="Content-center Heading-small">{date}</Row>
+            <Row className="Content-center Heading-medium">
+              {new Date(date).toLocaleDateString("de-DE", { weekday: "long" })}
+            </Row>
+            <Row className="Content-center Heading-small">
+              {new Date(date).toLocaleDateString()}
+            </Row>
           </Col>
           <Col className="Text-end">
             <div className="Height-full Text-center">

@@ -7,7 +7,16 @@ import TasksList from "./components/TasksList";
 import Helper from "./util/Helper";
 
 import { db } from "./firebase";
-import { doc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
+import {
+  doc,
+  query,
+  where,
+  collection,
+  getDoc,
+  updateDoc,
+  onSnapshot,
+  getDocs,
+} from "firebase/firestore";
 import { uid } from "uid";
 
 export default function App() {
@@ -15,6 +24,7 @@ export default function App() {
   const [flatTasks, setFlatTasks] = useState([]);
   const [todos, setTodos] = useState([]);
   const [users, setUsers] = useState([]);
+  const [dateString, setDateString] = useState(new Date().toUTCString());
   const [flatId, setFlatId] = useState("flat1");
   const [progressOverall, setProgressOverall] = useState(0);
 
@@ -44,21 +54,41 @@ export default function App() {
   // Fetch tasks
   useEffect(() => {
     if (flatSchedule) {
-      const tasks = [];
+      const tasksRef = collection(db, "tasks");
+      // getDay returns between 0 and 6, where 0 is Sunday and 6 is Saturday.
+      const weekday = new Date(dateString).getDay();
+      console.log("weekday: ");
+      console.log(weekday);
 
-      flatSchedule.tasks.forEach((taskId) => {
-        getDoc(doc(db, "tasks", taskId)).then((taskSnap) => {
-          if (taskSnap.exists()) {
-            const task = taskSnap.data();
-            // use function version to use the actual state
-            setFlatTasks((oldState) => [...oldState, task]);
-          } else {
-            console.error("Unable to fetch flat data");
-          }
-        });
+      const tasksQuery = query(
+        tasksRef,
+        where("flat", "==", flatId),
+        where("weekdays", "array-contains", weekday)
+      );
+
+      getDocs(tasksQuery).then((querySnapshot) => {
+        console.log("fetched all tasks: ");
+        console.dir(querySnapshot);
+        if (querySnapshot.empty) {
+          // no documents found
+          setFlatTasks([]);
+          setProgressOverall(0);
+        } else {
+          querySnapshot.forEach((doc) => {
+            if (doc.exists()) {
+              const task = doc.data();
+              // use function version to use the actual state
+              setFlatTasks((oldState) => [...oldState, task]);
+
+              console.dir(task);
+            } else {
+              console.error("Unable to fetch flat data");
+            }
+          });
+        }
       });
     }
-  }, [flatSchedule]);
+  }, [flatSchedule, dateString]);
 
   useEffect(() => {
     if (flatSchedule) {
@@ -110,6 +140,8 @@ export default function App() {
         <Header
           progressPercent={progressOverall}
           title={flatSchedule.title}
+          date={dateString}
+          setDate={setDateString}
         ></Header>
       )}
       <Container className="App-container">
