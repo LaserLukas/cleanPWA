@@ -4,7 +4,6 @@ import { Container } from "react-bootstrap";
 import "./App.scss";
 import Header from "./components/Header";
 import TasksList from "./components/TasksList";
-import Helper from "./util/Helper";
 
 import { db } from "./firebase";
 import {
@@ -16,30 +15,56 @@ import {
   updateDoc,
   onSnapshot,
   getDocs,
+  setDoc,
+  addDoc,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
-import { uid } from "uid";
 
 export default function App() {
   const [flatSchedule, setFlatSchedule] = useState();
   const [flatTasks, setFlatTasks] = useState([]);
   const [todos, setTodos] = useState([]);
+  const [completedTodos, setCompletedTodos] = useState([]);
   const [users, setUsers] = useState([]);
   const [dateString, setDateString] = useState(new Date().toUTCString());
   const [flatId, setFlatId] = useState("flat1");
   const [progressOverall, setProgressOverall] = useState(0);
+  const [taskHistoryMap, setTaskHistoryMap] = useState(new Map());
+  const [loadComplete, setLoadComplete] = useState(false);
 
-  function updateTodo(newTodo, updateId) {
-    const todoRef = doc(db, "todos", updateId);
+  // adds or removes completed todo
+  function updateCompletedTodos(taskId, todoId) {
+    const historyIdToUpdate = taskHistoryMap.get(taskId);
+    const historyRef = doc(db, "history", historyIdToUpdate);
 
-    updateDoc(todoRef, {
-      done: newTodo.done,
-    });
+    // returns -1 if not found
+    const index = completedTodos.indexOf(todoId);
 
-    setTodos((oldState) => {
-      const index = oldState.findIndex((oldTodo) => oldTodo.id === updateId);
-      oldState[index] = newTodo;
-      return [...oldState];
-    });
+    if (index === -1) {
+      // Define todo as completed
+      console.log("add todo " + todoId);
+      console.log(historyIdToUpdate);
+      setCompletedTodos((oldState) => [...oldState, todoId]);
+
+      // update history persitent
+      updateDoc(historyRef, {
+        todosCompleted: arrayUnion(todoId),
+      });
+    } else {
+      console.log("remove todo " + todoId);
+      console.log(historyIdToUpdate);
+      // Define todo as not completed
+      setCompletedTodos((oldState) => {
+        oldState.splice(index, 1);
+        return [...oldState];
+      });
+
+      // update history persitent
+      updateDoc(historyRef, {
+        todosCompleted: arrayRemove(todoId),
+      });
+    }
   }
 
   // Fetch flat data
@@ -67,20 +92,17 @@ export default function App() {
       );
 
       getDocs(tasksQuery).then((querySnapshot) => {
-        console.log("fetched all tasks: ");
-        console.dir(querySnapshot);
+        setFlatTasks([]);
         if (querySnapshot.empty) {
           // no documents found
-          setFlatTasks([]);
           setProgressOverall(0);
         } else {
           querySnapshot.forEach((doc) => {
             if (doc.exists()) {
               const task = doc.data();
+              task.id = doc.id;
               // use function version to use the actual state
               setFlatTasks((oldState) => [...oldState, task]);
-
-              console.dir(task);
             } else {
               console.error("Unable to fetch flat data");
             }
@@ -90,17 +112,17 @@ export default function App() {
     }
   }, [flatSchedule, dateString]);
 
+  // Task references
   useEffect(() => {
     if (flatSchedule) {
       // only fetch todos if all tasks have been fetched
       if (flatSchedule.tasks.length === flatTasks.length) {
         flatTasks.forEach((task) => {
           // fetch the todos for task
-          task.todos.forEach((todo) => {
-            getDoc(doc(db, "todos", todo)).then((todoSnap) => {
+          task.todos.forEach((todoId) => {
+            getDoc(doc(db, "todos", todoId)).then((todoSnap) => {
               if (todoSnap.exists()) {
                 const todo = todoSnap.data();
-
                 // use function version to use the actual state
                 setTodos((oldState) => [...oldState, todo]);
               } else {
@@ -108,6 +130,59 @@ export default function App() {
               }
             });
           });
+
+          // fetch history
+          // this will fetch all informations about the state of the task and todo object
+          if (task) {
+            let createNewHistory = false;
+            let oldestHistory = " ";
+            if (task.history.length) {
+              oldestHistory = task.history[task.history.length - 1];
+            }
+            getDoc(doc(db, "history", oldestHistory)).then((historySnap) => {
+              if (historySnap.exists()) {
+                const history = historySnap.data();
+                history.id = historySnap.id;
+                if (isTaskHistoryCurrent(task, history)) {
+                  // history is current
+                  setTaskHistoryMap((oldState) => {
+                    oldState.set(task.id, history.id);
+                    return new Map(oldState);
+                  });
+                  setCompletedTodos((oldState) => [
+                    ...oldState,
+                    ...history.todosCompleted,
+                  ]);
+                } else {
+                  // history isnt current
+                  createNewHistory = true;
+                }
+              } else {
+                // history doesn't exist
+                createNewHistory = true;
+              }
+              console.log("check if have to create new: " + createNewHistory);
+              if (createNewHistory) {
+                // create new history
+                addDoc(collection(db, "history"), {
+                  finished: false,
+                  statusUpdate: new Date().toUTCString(),
+                  task: task.id,
+                  todosCompleted: [],
+                }).then((historyRef) => {
+                  // update task
+                  setTaskHistoryMap((oldState) => {
+                    oldState.set(task.id, historyRef.id);
+                    return new Map(oldState);
+                  });
+
+                  updateDoc(doc(db, "tasks", task.id), {
+                    history: [...task.history, historyRef.id],
+                  });
+                });
+              }
+            });
+          }
 
           // fetch users for task
           getDoc(doc(db, "users", task.responsible)).then((userSnap) => {
@@ -120,6 +195,8 @@ export default function App() {
               console.error("Unable to fetch user data");
             }
           });
+
+          // fetch
         });
       }
     }
@@ -127,12 +204,13 @@ export default function App() {
 
   // update the progress if after fetching or updating todos
   useEffect(() => {
-    if (todos) {
-      const progress = Helper.getOverallProgress(todos);
-      console.log("progress: " + progress);
+    // check to be sure that no NAN error accures
+    if (todos.length >= completedTodos.length) {
+      const progress = parseInt((completedTodos.length / todos.length) * 100);
+
       setProgressOverall(progress);
     }
-  }, [todos]);
+  }, [completedTodos]);
 
   return (
     <div>
@@ -148,10 +226,37 @@ export default function App() {
         <TasksList
           tasks={flatTasks}
           todos={todos}
+          completedTodos={completedTodos}
           users={users}
-          updateTodo={updateTodo}
+          updateTodo={updateCompletedTodos}
         ></TasksList>
       </Container>
     </div>
   );
+}
+
+function isTaskHistoryCurrent(task, history) {
+  // Define the last start of the task
+  const taskStartWeekday = task.weekdays[0]; // weekdays have to consist of at least 1 item
+  const taskEndWeekday = task.weekdays[task.weekdays.length - 1];
+  const lastStartWeekDate = new Date();
+
+  // get the last starting weekday after today
+  lastStartWeekDate.setDate(
+    lastStartWeekDate.getDate() -
+      ((lastStartWeekDate.getDay() + (7 - taskStartWeekday)) % 7)
+  );
+
+  // just focus on the weekday
+  lastStartWeekDate.setHours(0, 0, 0, 0);
+
+  // check if history is for the current task period
+  if (
+    !history.statusUpdate ||
+    new Date(history.statusUpdate) <= lastStartWeekDate
+  ) {
+    return false;
+  } else {
+    return true;
+  }
 }

@@ -6,21 +6,18 @@ import "./TaskPreview.scss";
 import { storage } from "../firebase";
 import { ref, getDownloadURL } from "firebase/storage";
 
-export default function TaskPreview({ task, todos = [], updateTodo, user }) {
+export default function TaskPreview({
+  task,
+  todos = [],
+  updateTodo,
+  user,
+  completedTodos,
+}) {
   const [showDetails, setShowDetails] = useState(false);
   const [iconURL, setIconURL] = useState("./images/placeholder.png");
 
-  function setNewTodoStateDone(event, isDone, todo) {
-    event.stopPropagation();
-    todo.done = isDone;
-    // use callback funtion to change state and safe changes in database
-    updateTodo(todo, todo.id);
-  }
-
-  // download the
+  // download the profile icons
   useEffect(() => {
-    console.log("fetch image, user: ");
-    console.dir(user);
     if (user) {
       getDownloadURL(ref(storage, `character_images/${user.avatarIcon}`))
         .then((url) => {
@@ -54,32 +51,27 @@ export default function TaskPreview({ task, todos = [], updateTodo, user }) {
           ></Image>
         </Col>
       </Row>
-      <LoadingBar PerCent={Helper.getTaskProgress(todos)} />
+      <LoadingBar PerCent={Helper.getTaskProgress(todos, completedTodos)} />
       {showDetails &&
         todos.map((todo, i) => {
-          console.log("create todo: ");
-          console.dir(todo);
-          if (todo.done) {
-            return (
-              <div
-                onClick={(e) => setNewTodoStateDone(e, false, todo)}
-                className="Todo Color-done Text-light"
-                key={i}
-              >
-                {todo.title}
-              </div>
-            );
-          } else {
-            return (
-              <div
-                onClick={(e) => setNewTodoStateDone(e, true, todo)}
-                className="Todo"
-                key={i}
-              >
-                {todo.title}
-              </div>
-            );
+          let buttoStyle = "Todo";
+          if (completedTodos.includes(todo.id)) {
+            const buttonStyleCompleted = "Todo Color-done Text-light";
+            buttoStyle = buttonStyleCompleted;
           }
+          return (
+            <div
+              onClick={(event) => {
+                event.stopPropagation();
+                // use callback funtion to change state and safe changes in database
+                updateTodo(task.id, todo.id);
+              }}
+              className={buttoStyle}
+              key={i}
+            >
+              {todo.title}
+            </div>
+          );
         })}
     </Container>
   );
