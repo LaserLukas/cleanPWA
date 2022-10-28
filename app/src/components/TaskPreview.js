@@ -30,7 +30,10 @@ export default function TaskPreview({
   }, [user]);
 
   return (
-    <Container className="Card" onClick={() => setShowDetails(!showDetails)}>
+    <Container
+      className={task.enabled ? "Card" : "Card Card-disabled"}
+      onClick={() => setShowDetails(!showDetails)}
+    >
       <Row>
         <Col>
           <Row>
@@ -54,8 +57,11 @@ export default function TaskPreview({
       <LoadingBar PerCent={Helper.getTaskProgress(todos, completedTodos)} />
       {showDetails &&
         todos.map((todo, i) => {
+          if (!todo) {
+            return;
+          }
           let buttoStyle = "Todo";
-          if (completedTodos.includes(todo.id)) {
+          if (todo && completedTodos.includes(todo.id)) {
             const buttonStyleCompleted = "Todo Color-done Text-light";
             buttoStyle = buttonStyleCompleted;
           }
@@ -63,6 +69,12 @@ export default function TaskPreview({
             <div
               onClick={(event) => {
                 event.stopPropagation();
+
+                // diable task todo
+                if (!task.enabled) {
+                  return;
+                }
+
                 // use callback funtion to change state and safe changes in database
                 updateTodo(task.id, todo.id);
               }}

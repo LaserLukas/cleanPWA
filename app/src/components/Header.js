@@ -39,9 +39,13 @@ export default function Header({
               ></Icon>
             </div>
           </Col>
-          <Col>
+          <Col onClick={(e) => setDate(new Date().toUTCString())}>
             <Row className="Content-center Heading-medium">
-              {new Date(date).toLocaleDateString("de-DE", { weekday: "long" })}
+              {checkIfDateIsToday(new Date(date))
+                ? "Today"
+                : new Date(date).toLocaleDateString("de-DE", {
+                    weekday: "long",
+                  })}
             </Row>
             <Row className="Content-center Heading-small">
               {new Date(date).toLocaleDateString()}
@@ -63,4 +67,8 @@ export default function Header({
       </Container>
     </Container>
   );
+}
+
+function checkIfDateIsToday(date) {
+  return date.setHours(0, 0, 0, 0) === new Date().setHours(0, 0, 0, 0);
 }

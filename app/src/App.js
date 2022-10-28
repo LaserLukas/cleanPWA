@@ -85,11 +85,7 @@ export default function App() {
       console.log("weekday: ");
       console.log(weekday);
 
-      const tasksQuery = query(
-        tasksRef,
-        where("flat", "==", flatId),
-        where("weekdays", "array-contains", weekday)
-      );
+      const tasksQuery = query(tasksRef, where("flat", "==", flatId));
 
       getDocs(tasksQuery).then((querySnapshot) => {
         setFlatTasks([]);
@@ -101,6 +97,8 @@ export default function App() {
             if (doc.exists()) {
               const task = doc.data();
               task.id = doc.id;
+              task.enabled = task.weekdays.includes(weekday);
+              console.log("task is enabled: " + task.enabled);
               // use function version to use the actual state
               setFlatTasks((oldState) => [...oldState, task]);
             } else {
@@ -115,11 +113,16 @@ export default function App() {
   // Task references
   useEffect(() => {
     if (flatSchedule) {
+      // reset history and todos
+      setCompletedTodos((oldState) => []);
+      setTodos((oldState) => []);
+      setTaskHistoryMap((oldState) => new Map());
       // only fetch todos if all tasks have been fetched
       if (flatSchedule.tasks.length === flatTasks.length) {
         flatTasks.forEach((task) => {
           // fetch the todos for task
           task.todos.forEach((todoId) => {
+            console.log("fetch todos");
             getDoc(doc(db, "todos", todoId)).then((todoSnap) => {
               if (todoSnap.exists()) {
                 const todo = todoSnap.data();
@@ -139,6 +142,7 @@ export default function App() {
             if (task.history.length) {
               oldestHistory = task.history[task.history.length - 1];
             }
+            console.log("fetch history");
             getDoc(doc(db, "history", oldestHistory)).then((historySnap) => {
               if (historySnap.exists()) {
                 const history = historySnap.data();
@@ -205,7 +209,7 @@ export default function App() {
   // update the progress if after fetching or updating todos
   useEffect(() => {
     // check to be sure that no NAN error accures
-    if (todos.length >= completedTodos.length) {
+    if (todos.length >= completedTodos.length && todos.length != 0) {
       const progress = parseInt((completedTodos.length / todos.length) * 100);
 
       setProgressOverall(progress);

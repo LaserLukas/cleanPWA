@@ -9,6 +9,11 @@
     padding-bottom: 5%;
     box-shadow: 5px 5px 12px -8px rgba(0,0,0,0.5);
     border-radius: 15px;
+    overflow: hidden;
+}
+
+.Card-disabled {
+    opacity: 0.7;
 }
 
 .Todo {
