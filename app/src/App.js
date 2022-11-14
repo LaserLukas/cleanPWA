@@ -4,6 +4,7 @@ import { Container } from "react-bootstrap";
 import "./App.scss";
 import Header from "./components/Header";
 import TasksList from "./components/TasksList";
+import moment from "moment";
 
 import { db } from "./firebase";
 import {
@@ -20,6 +21,7 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
+import { TbBuildingMonument, TbChevronsDownLeft } from "react-icons/tb";
 
 export default function App() {
   const [flatSchedule, setFlatSchedule] = useState();
@@ -82,8 +84,6 @@ export default function App() {
       const tasksRef = collection(db, "tasks");
       // getDay returns between 0 and 6, where 0 is Sunday and 6 is Saturday.
       const weekday = new Date(dateString).getDay();
-      console.log("weekday: ");
-      console.log(weekday);
 
       const tasksQuery = query(tasksRef, where("flat", "==", flatId));
 
@@ -98,7 +98,12 @@ export default function App() {
               const task = doc.data();
               task.id = doc.id;
               task.enabled = task.weekdays.includes(weekday);
-              console.log("task is enabled: " + task.enabled);
+              task.responsible = getResponsibleUser(
+                task.responsibleFlow,
+                new Date(task.startDate),
+                new Date(dateString),
+                task.weekdays[0]
+              );
               // use function version to use the actual state
               setFlatTasks((oldState) => [...oldState, task]);
             } else {
@@ -168,6 +173,7 @@ export default function App() {
               console.log("check if have to create new: " + createNewHistory);
               if (createNewHistory) {
                 // create new history
+                console.log("create new history");
                 addDoc(collection(db, "history"), {
                   finished: false,
                   statusUpdate: new Date().toUTCString(),
@@ -233,6 +239,7 @@ export default function App() {
           completedTodos={completedTodos}
           users={users}
           updateTodo={updateCompletedTodos}
+          selectedDate={new Date(dateString)}
         ></TasksList>
       </Container>
     </div>
@@ -263,4 +270,46 @@ function isTaskHistoryCurrent(task, history) {
   } else {
     return true;
   }
+}
+
+// gets the responsible user for the current date
+function getResponsibleUser(
+  userFlow,
+  scheduleStartDate,
+  selectedDate,
+  startingWeekday
+) {
+  // get amount of cleaning iterations by finding out the amount of starting weekdays
+  let amountCleaningIterations = getAmountOfWeekday(
+    scheduleStartDate,
+    selectedDate,
+    startingWeekday
+  );
+
+  // if the starting date and starting weekday is not equal means that there was already a iteration before
+  if (scheduleStartDate.getDate() !== startingWeekday) {
+    amountCleaningIterations++;
+  }
+  const iterationIndex = amountCleaningIterations % userFlow.length;
+  const responsibleUser = userFlow[iterationIndex - 1];
+  return responsibleUser;
+}
+
+// get number of specific weekday between two dates
+// weekday sun = 0, mon = 1
+function getAmountOfWeekday(dateStart, dateEnd, weekday) {
+  var currentDate = dateStart,
+    amountWeekday = 0;
+  while (currentDate <= dateEnd) {
+    //count if date is the weekday
+    if (currentDate.getDay() === weekday) {
+      amountWeekday++;
+    }
+    // add one day
+    // automatically rolling over to next month
+    var d = new Date(currentDate.valueOf());
+    d.setDate(d.getDate() + 1);
+    currentDate = d;
+  }
+  return amountWeekday;
 }

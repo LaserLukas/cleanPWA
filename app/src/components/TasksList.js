@@ -8,12 +8,17 @@ export default function TasksList({
   updateTodo,
   users,
   completedTodos,
+  selectedDate,
 }) {
   return (
     // TODO: css to make the scrolling correct - use placeholder of exact size of the header container
     <Container className="List-container">
       <div className="Item-placeholder"></div>
       {tasks.map((task, i) => {
+        // dont show the task if it hasnt been created at the selected date
+        if (new Date(task.startDate) > selectedDate) {
+          return;
+        }
         const user = users.find((user) => user.id === task.responsible);
         var taskTodos = [];
         task.todos.forEach((todoId) => {
