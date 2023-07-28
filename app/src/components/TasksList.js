@@ -1,3 +1,4 @@
+import React from "react";
 import { Container } from "react-bootstrap";
 import TaskPreview from "./TaskPreview";
 import "./TaskList.scss";

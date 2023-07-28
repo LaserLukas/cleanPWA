@@ -1,4 +1,5 @@
 import { IconContext } from "react-icons";
+import React from "react";
 
 export default function ({
   Icon,

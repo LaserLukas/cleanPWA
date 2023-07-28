@@ -4,8 +4,8 @@ import { Container } from "react-bootstrap";
 import "./App.scss";
 import Header from "./components/Header";
 import TasksList from "./components/TasksList";
-import moment from "moment";
 
+import { initializeApp } from 'firebase/app';
 import { db } from "./firebase";
 import {
   doc,
@@ -16,12 +16,10 @@ import {
   updateDoc,
   onSnapshot,
   getDocs,
-  setDoc,
   addDoc,
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
-import { TbBuildingMonument, TbChevronsDownLeft } from "react-icons/tb";
 
 export default function App() {
   const [flatSchedule, setFlatSchedule] = useState();
@@ -33,10 +31,10 @@ export default function App() {
   const [flatId, setFlatId] = useState("flat1");
   const [progressOverall, setProgressOverall] = useState(0);
   const [taskHistoryMap, setTaskHistoryMap] = useState(new Map());
-  const [loadComplete, setLoadComplete] = useState(false);
 
   // adds or removes completed todo
   function updateCompletedTodos(taskId, todoId) {
+    console.log("update Completed Todos")
     const historyIdToUpdate = taskHistoryMap.get(taskId);
     const historyRef = doc(db, "history", historyIdToUpdate);
 
@@ -71,6 +69,7 @@ export default function App() {
 
   // Fetch flat data
   useEffect(() => {
+    console.log("fetch flat data")
     onSnapshot(doc(db, "flats", flatId), (doc) => {
       const flatData = doc.data();
       console.dir(flatData);
@@ -80,6 +79,7 @@ export default function App() {
 
   // Fetch tasks
   useEffect(() => {
+    console.log("fetch tasks")
     if (flatSchedule) {
       const tasksRef = collection(db, "tasks");
       // getDay returns between 0 and 6, where 0 is Sunday and 6 is Saturday.
@@ -117,6 +117,7 @@ export default function App() {
 
   // Task references
   useEffect(() => {
+    console.log("fetch references")
     if (flatSchedule) {
       // reset history and todos
       setCompletedTodos((oldState) => []);
@@ -214,6 +215,7 @@ export default function App() {
 
   // update the progress if after fetching or updating todos
   useEffect(() => {
+    console.log("update progress")
     // check to be sure that no NAN error accures
     if (todos.length >= completedTodos.length && todos.length != 0) {
       const progress = parseInt((completedTodos.length / todos.length) * 100);

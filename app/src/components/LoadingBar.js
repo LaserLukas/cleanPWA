@@ -1,3 +1,4 @@
+import React from "react";
 import { Container, Row, ProgressBar, Col } from "react-bootstrap";
 import "./LoadingBar.scss";
 
