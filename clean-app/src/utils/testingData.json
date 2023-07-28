@@ -1,0 +1,37 @@
+{
+    "name": "Putzplan Hoodgart",
+    "id": 1,
+    "startWeekday": 2,
+    "endWeekday": 3,
+    "tasks": [
+        {
+            "title": "Küche",
+            "responsible": "Ennis Engesser",
+            "todos": [
+                {
+                    "title": "Herdplatte abwischen",
+                    "done": true
+                },
+                {
+                    "title": "Tisch abwischen",
+                    "done": false
+                }
+            ]
+        },
+        {
+            "title": "Bad",
+            "responsible": "Lukas Ganter",
+            "todos": [
+                {
+                    "title": "Dusche putzen",
+                    "done": false
+                },
+                {
+                    "title": "Waschbecken putzen",
+                    "done": false
+                }
+            ]
+        }
+    ]
+
+}

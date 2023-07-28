@@ -1,0 +1,59 @@
+@import './custom.scss';
+
+/* Font */
+
+.Text-center {
+    text-align: center;
+}
+
+.Text-end {
+    text-align: end;
+}
+
+.Text-start {
+    text-align: start;
+}
+
+.Text-light {
+    color: $light;
+}
+
+.Text-dark {
+    color: $dark;
+}
+
+.Text-bold {
+    font-weight: bold;
+}
+
+.Heading-big {
+    font-size: xx-large;
+    font-weight: bold;
+}
+
+.Heading-medium {
+    font-size: x-large;
+    font-weight: bold;
+}
+
+.Heading-small {
+    font-size: large;
+}
+
+/* Layout */
+
+.Height-full {
+    height: 100%;
+}
+
+.Content-center {
+    justify-content: center;
+}
+
+.Margin-none {
+    margin: 0%;
+}
+
+.Padding-none {
+    padding: 0%;
+}

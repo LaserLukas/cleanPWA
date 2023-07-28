@@ -1,0 +1,38 @@
+@import '../index.scss';
+
+.Profile-image {
+    float: right;
+}
+
+.Card {
+    padding-top: 5%;
+    padding-bottom: 5%;
+    box-shadow: 5px 5px 12px -8px rgba(0,0,0,0.5);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.Card-disabled {
+    opacity: 0.7;
+}
+
+.Todo {
+    margin: 5%;
+    padding:5%;
+    box-shadow: 5px 5px 12px -8px rgba(0,0,0,0.5);
+    border-radius: 30px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.Color-done {
+    background-color: $success;
+}
+
+.Task-list-container {
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
